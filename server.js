@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
 
 // Load environment variables
 dotenv.config();
@@ -14,14 +15,11 @@ const PORT = process.env.PORT || 3005;
 // Middleware
 app.use(cors({
   // Allow requests from GitHub Pages
-  origin: ['http://localhost:3000', 'http://localhost:3002', 'https://yourusername.github.io'],
+  origin: ['http://localhost:3000', 'http://localhost:3002', 'https://fred7vr.github.io'],
   methods: ['GET', 'POST'],
   credentials: true
 }));
 app.use(express.json());
-
-// Serve static files from the build folder for production
-app.use(express.static(path.join(__dirname, 'build')));
 
 // Initialize Anthropic client
 let anthropic;
@@ -81,10 +79,33 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// Serve the React app for any other routes in production
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// Add a simple health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'TheraBot backend is running' });
 });
+
+// Only serve static files if the build directory exists
+if (fs.existsSync(path.join(__dirname, 'build'))) {
+  console.log('Serving static files from build directory');
+  app.use(express.static(path.join(__dirname, 'build')));
+  
+  // Serve the React app for any other routes in production
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
+} else {
+  console.log('Build directory not found, API-only mode');
+  // Default route when no build directory exists
+  app.get('/', (req, res) => {
+    res.json({ 
+      message: 'TheraBot API server is running. Frontend is not served from this location.',
+      endpoints: [
+        { path: '/api/chat', method: 'POST', description: 'Chat with Claude API' },
+        { path: '/api/health', method: 'GET', description: 'Server health check' }
+      ]
+    });
+  });
+}
 
 // Start server
 app.listen(PORT, () => {
