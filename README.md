@@ -34,7 +34,7 @@ TheraBot is an empathetic AI assistant powered by the Claude API. It provides su
 3. Create a `.env` file in the root directory with your Anthropic API key:
    ```
    PORT=3005
-   ANTHROPIC_API_KEY=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
+   ANTHROPIC_API_KEY=your-api-key-here
 
 ```
 4. Start the development server:

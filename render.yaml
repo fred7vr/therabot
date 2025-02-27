@@ -6,5 +6,5 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     envVars:
-      - key: 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
+      - key: your-api-key-here
         sync: false
