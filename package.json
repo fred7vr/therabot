@@ -1,7 +1,7 @@
 {
     "name": "therabot",
     "version": "0.1.0",
-    "homepage": "https://yourusername.github.io/therabot",
+    "homepage": "https://fred7vr.github.io/therabot",
     "private": true,
     "dependencies": {
       "@anthropic-ai/sdk": "^0.18.0",
