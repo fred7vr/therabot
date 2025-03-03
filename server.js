@@ -14,8 +14,10 @@ const PORT = process.env.PORT || 3005;
 
 // Middleware
 app.use(cors({
-  // Allow requests from GitHub Pages
-  origin: ['http://localhost:3000', 'http://localhost:3002', 'https://fred7vr.github.io'],
+  // Allow requests from all origins when deployed (or specific origins in development)
+  origin: process.env.NODE_ENV === 'production' 
+    ? true 
+    : ['http://localhost:3000', 'http://localhost:3002', 'https://fred7vr.github.io'],
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -62,10 +64,14 @@ app.post('/api/chat', async (req, res) => {
     });
     
     console.log('Claude API response received');
-    console.log('Response structure:', Object.keys(response));
     
-    // Send the response back to the client
-    res.json(response);
+    // Format the response to match what the frontend expects
+    // The updated frontend looks for response.response first
+    res.json({
+      response: response.content[0].text,
+      // Include the original response too for debugging
+      original: response
+    });
   } catch (error) {
     console.error('Error calling Claude API:', error);
     console.error('Error details:', error.message);

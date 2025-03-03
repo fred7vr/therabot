@@ -18,7 +18,7 @@ function App() {
   
   // Define API URL based on environment
   const API_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://your-backend-url.com/api/chat'  // Replace with your actual backend URL when you have it
+    ? '/api/chat'  // Use relative path for same domain deployment on Render
     : 'http://localhost:3005/api/chat';
   
   // Scroll to bottom of messages
@@ -30,11 +30,19 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  // Initialize theme from localStorage or default
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('therabot-theme') || 'light';
+    setTheme(savedTheme);
+    document.body.className = savedTheme;
+  }, []);
+
   // Toggle theme between light and dark
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     document.body.className = newTheme;
+    localStorage.setItem('therabot-theme', newTheme);
   };
 
   // Handle message submission
@@ -76,8 +84,14 @@ function App() {
       console.log('API Response:', data); // Log the full response
       
       // Handle different response formats
-      if (data.content && Array.isArray(data.content) && data.content.length > 0 && data.content[0].text) {
-        // Original expected format with content array
+      if (data.response) {
+        // If the backend returns { response: "message" }
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: data.response
+        }]);
+      } else if (data.content && Array.isArray(data.content) && data.content.length > 0 && data.content[0].text) {
+        // Original Claude API format with content array
         setMessages(prev => [...prev, {
           role: 'assistant',
           content: data.content[0].text
@@ -108,13 +122,41 @@ function App() {
     }
   };
 
+  // Save conversation to local storage
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('therabot-conversation', JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Load conversation from local storage on initial load
+  useEffect(() => {
+    const savedConversation = localStorage.getItem('therabot-conversation');
+    if (savedConversation) {
+      try {
+        const parsedConversation = JSON.parse(savedConversation);
+        if (Array.isArray(parsedConversation) && parsedConversation.length > 0) {
+          setMessages(parsedConversation);
+        }
+      } catch (e) {
+        console.error('Error parsing saved conversation:', e);
+      }
+    }
+  }, []);
+
+  // Clear conversation
+  const startNewChat = () => {
+    setMessages([]);
+    localStorage.removeItem('therabot-conversation');
+  };
+
   return (
     <div className={`app ${theme}`}>
       <div className="sidebar">
         <div className="sidebar-header">
           <h2>TheraBot</h2>
         </div>
-        <button className="new-chat-btn" onClick={() => setMessages([])}>
+        <button className="new-chat-btn" onClick={startNewChat}>
           + New Chat
         </button>
         
