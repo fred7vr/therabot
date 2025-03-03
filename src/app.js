@@ -1,6 +1,6 @@
 // App.js - Main React component for TheraBot
 import React, { useState, useRef, useEffect } from 'react';
-import './App.css';
+import './app.css';
 import ReactMarkdown from 'react-markdown';
 import { FiSend, FiSettings, FiUser, FiInfo } from 'react-icons/fi';
 
