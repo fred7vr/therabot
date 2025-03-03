@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/therabot/static/css/main.6dd540fc.css",
-    "main.js": "/therabot/static/js/main.62ff58b8.js",
-    "index.html": "/therabot/index.html",
-    "main.6dd540fc.css.map": "/therabot/static/css/main.6dd540fc.css.map",
-    "main.62ff58b8.js.map": "/therabot/static/js/main.62ff58b8.js.map"
+    "main.css": "/static/css/main.6dd540fc.css",
+    "main.js": "/static/js/main.defa1e69.js",
+    "index.html": "/index.html",
+    "main.6dd540fc.css.map": "/static/css/main.6dd540fc.css.map",
+    "main.defa1e69.js.map": "/static/js/main.defa1e69.js.map"
   },
   "entrypoints": [
     "static/css/main.6dd540fc.css",
-    "static/js/main.62ff58b8.js"
+    "static/js/main.defa1e69.js"
   ]
 }
